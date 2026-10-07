@@ -146,13 +146,7 @@
       btn.style.background = '#28a745';
       btn.disabled = true;
     }
-    function doTask(btn, reward) {
-      count += reward;
-      updateDisplay();
-      btn.innerText = 'Done';
-      btn.style.background = '#28a745';
-      btn.disabled = true;
-    }
+    
 
     function shareInvite() {
       const botUsername = 'TRXmine_X_bot';
@@ -166,6 +160,76 @@
       } else {
         window.open(shareUrl, '_blank');
       }
+  // កំណត់ប្រាក់ដំបូង និងថ្ងៃដកចុងក្រោយ
+  let userBalance = parseFloat(localStorage.getItem('user_usd_balance')) || 5.00;
+  let lastWithdrawDate = localStorage.getItem('last_withdraw_date');
+
+  function updateWalletDisplay() {
+    const el = document.getElementById('wallet-usd');
+    if(el) el.innerText = userBalance.toFixed(2);
+  }
+  updateWalletDisplay();
+
+  function openWithdrawModal() {
+    if (lastWithdrawDate) {
+      const daysPassed = (new Date() - new Date(lastWithdrawDate)) / (1000 * 60 * 60 * 24);
+      if (daysPassed < 30) {
+        const daysLeft = Math.ceil(30 - daysPassed);
+        alert(`អ្នកអាចដកប្រាក់បានតែ ១ ដងគត់ក្នុងមួយខែ!\nសូមរង់ចាំ ${daysLeft} ថ្ងៃទៀត។`);
+        return;
+      }
+    }
+    document.getElementById('withdraw-modal').style.display = 'flex';
+  }
+
+  function closeWithdrawModal() {
+    document.getElementById('withdraw-modal').style.display = 'none';
+  }
+
+  function confirmWithdraw() {
+    const method = document.getElementById('w-method').value;
+    const amount = parseFloat(document.getElementById('w-amount').value);
+    const account = document.getElementById('w-account').value.trim();
+    const name = document.getElementById('w-name').value.trim();
+
+    if (isNaN(amount) || amount < 1 || amount > 10) {
+      alert('ចំនួនទឹកប្រាក់ដកត្រូវតែចាប់ពី $1.00 ដល់ $10.00!');
+      return;
+    }
+
+    if (amount > userBalance) {
+      alert('ប្រាក់ក្នុង Wallet របស់អ្នកមិនគ្រប់គ្រាន់ទេ!');
+      return;
+    }
+
+    if (!account || !name) {
+      alert('សូមបំពេញលេខកុង និងឈ្មោះម្ចាស់គណនីឱ្យបានត្រឹមត្រូវ!');
+      return;
+    }
+
+    const adminUsername = 'ty_khouch';
+    const message = `📥 **សំណើដកប្រាក់ថ្មី!**\n\n` +
+                    `💵 ចំនួន: $${amount.toFixed(2)}\n` +
+                    `🏦 វិធីសាស្ត្រ: ${method}\n` +
+                    `💳 លេខកុង/Email: ${account}\n` +
+                    `👤 ឈ្មោះ: ${name.toUpperCase()}`;
+
+    localStorage.setItem('last_withdraw_date', new Date().toISOString());
+    userBalance -= amount;
+    localStorage.setItem('user_usd_balance', userBalance);
+    updateWalletDisplay();
+
+    closeWithdrawModal();
+
+    alert("✅ សំណើដកប្រាក់ត្រូវបានផ្ញើរួចរាល់!\n\nសូមរង់ចាំពី ១ ទៅ ៣ ម៉ោង ឬតិចជាងនេះ ដើម្បីឱ្យ Admin ធ្វើការផ្ទៀងផ្ទាត់ និងផ្ទេរប្រាក់ជូន។ អរគុណសម្រាប់ការរង់ចាំ!");
+
+    const telegramUrl = `https://t.me/${adminUsername}?text=${encodeURIComponent(message)}`;
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(telegramUrl);
+    } else {
+      window.open(telegramUrl, '_blank');
+    }
+  }
     }
   </script>
 </body>
