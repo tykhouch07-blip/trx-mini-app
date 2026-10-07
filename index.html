@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TRX Mining Mini App</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b0b0e;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        /* Top Balance Cards */
+        .cards-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .balance-card {
+            background-color: #16161a;
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #23232a;
+        }
+
+        .coin-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .coin-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .coin-details .label {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .coin-details .amount {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .btn-send {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Fan Spinner Container */
+        .miner-container {
+            position: relative;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fan-spinner {
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #8a2be2 0%, #4b0082 50%, #110022 100%);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: spin 3s linear infinite;
+        }
+
+        /* Inner logo inside fan */
+        .fan-center {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #111;
+            border-radius: 50%;
+            border: 2px solid #8a2be2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .fan-center img {
+            width: 30px;
+            height: 30px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Balance & Mining Speed */
+        .main-balance {
+            text-align: center;
+        }
+
+        .main-balance .trx-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .main-balance .hashrate {
+            font-size: 14px;
+            color: #d1d1d6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* Action Buttons */
+        .actions {
+            width: 100%;
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: #ffffff;
+            color: #000;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Bottom Navigation Bar */
+        .nav-bar {
+            width: 100%;
+            background: #121215;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            margin-top: 20px;
+            border: 1px solid #1f1f24;
+        }
+
+        .nav-item {
+            color: #6c6c70;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #8a2be2;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Top Balance Cards -->
+    <div class="cards-container">
+        <!-- Tron Card -->
+        <div class="balance-card">
+            <div class="coin-info">
+                <img src="https://cryptologos.cc/logos/tron-trx-logo.png" class="coin-icon" alt="TRX">
+                <div class="coin-details">
+                    <div class="label">Tron Balance</div>
+                    <div class="amount" id="top-trx">3.76 TRX</div>
+                </div>
+            </div>
+            <button class="btn-send" onclick="showAlert('Send TRX')">Send</button>
+        </div>
+
+        <!-- SHIB Card -->
+        <div class="balance-card">
+            <div class="coin-info">
+                <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" class="coin-icon" alt="SHIB">
+                <div class="coin-details">
+                    <div class="label">SHIB Balance</div>
+                    <div class="amount">26500 SHIB</div>
+                </div>
+            </div>
+            <button class="btn-send" onclick="showAlert('Send SHIB')">Send</button>
+        </div>
+    </div>
+
+    <!-- 2. Mining Fan Graphics -->
+    <div class="miner-container">
+        <div class="fan-spinner"></div>
+        <div class="fan-center">
+            <img src="https://cryptologos.cc/logos/tron-trx-logo.png" alt="TRX Logo">
+        </div>
+    </div>
+
+    <!-- 3. Real-time Mining Counter -->
+    <div class="main-balance">
+        <div class="trx-value"><span id="mined-amount">1.593582</span> TRX</div>
+        <div class="hashrate">1.0 GH/s ⚡</div>
+    </div>
+
+    <!-- 4. Claim and Boost Buttons -->
+    <div class="actions">
+        <button class="action-btn" onclick="claimTRX()">Claim</button>
+        <button class="action-btn" onclick="showAlert('Boost Speed')">Boost</button>
+    </div>
+
+    <!-- 5. Bottom Navigation -->
+    <div class="nav-bar">
+        <div class="nav-item active">💎</div>
+        <div class="nav-item">👛</div>
+        <div class="nav-item">👥</div>
+        <div class="nav-item">🚀</div>
+    </div>
+
+    <script>
+        // Init Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let currentMined = 1.593582;
+        let topTRX = 3.76;
+
+        // Auto Increase Mining Amount (Simulate Mining)
+        setInterval(() => {
+            currentMined += 0.000012;
+            document.getElementById('mined-amount').innerText = currentMined.toFixed(6);
+        }, 1000);
+
+        // Claim Function
+        function claimTRX() {
+            if(currentMined > 0) {
+                topTRX += currentMined;
+                document.getElementById('top-trx').innerText = topTRX.toFixed(2) + " TRX";
+                tg.HapticFeedback.notificationOccurred('success'); // Viberate phone
+                alert(`You claimed ${currentMined.toFixed(6)} TRX!`);
+                currentMined = 0.000000;
+                document.getElementById('mined-amount').innerText = "0.000000";
+            }
+        }
+
+        function showAlert(msg) {
+            tg.showAlert(msg + " feature clicked!");
+        }
+    </script>
+</body>
+</html>
