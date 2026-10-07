@@ -47,12 +47,46 @@
     <button class="btn" onclick="goToBoost()">Boost</button>
   </div>
 
-  <!-- TAB 2: WALLET -->
-  <div id="tab-wallet" class="tab-content">
-    <h2>💼 Wallet</h2>
-    <p style="margin:20px 0;">TRX Balance: <b id="wallet-trx">0.000486</b> TRX</p>
-    <button class="btn" onclick="alert('Withdraw feature coming soon!')">Withdraw</button>
+<!-- TAB 2: WALLET -->
+<div id="tab-wallet" class="tab-content">
+  <h2>💼 Wallet & Withdraw</h2>
+  <div style="background: #1a1a22; padding: 20px; border-radius: 12px; margin-top: 15px; text-align: center;">
+    <p style="font-size: 16px; color: #aaa;">តុល្យភាពរបស់អ្នក (Balance)</p>
+    <h1 style="font-size: 32px; color: #28a745; margin: 10px 0;">$<span id="wallet-usd">0.00</span></h1>
+    <p style="font-size: 12px; color: #888;">(1$ ដល់ 10$ ទើបអាចដកបាន និងដកបាន ១ដង/ខែ)</p>
+    
+    <button class="btn" style="width: 100%; background: #28a745; color: white; font-weight: bold; font-size: 16px; padding: 12px; margin-top: 15px;" onclick="openWithdrawModal()">💸 Withdraw Now</button>
   </div>
+</div>
+
+<!-- ផ្ទាំង POPUP MODAL សម្រាប់ដកប្រាក់ -->
+<div id="withdraw-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+  <div style="background: #22222b; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; text-align: left; color: white; box-sizing: border-box;">
+    <h3 style="margin-top: 0; text-align: center; color: #28a745;">ដកប្រាក់ (Withdraw)</h3>
+    
+    <label style="font-size: 13px; color: #ccc;">ជ្រើសរើសវិធីសាស្ត្រទទួលប្រាក់:</label>
+    <select id="w-method" style="width: 100%; padding: 10px; margin: 5px 0 12px 0; border-radius: 8px; background: #1a1a22; color: white; border: 1px solid #444;">
+      <option value="ABA Bank">ABA Bank</option>
+      <option value="ACLEDA Bank">ACLEDA Bank</option>
+      <option value="Wing Bank">Wing Bank</option>
+      <option value="PayPal">PayPal</option>
+    </select>
+
+    <label style="font-size: 13px; color: #ccc;">ចំនួនទឹកប្រាក់ ($1.00 - $10.00):</label>
+    <input type="number" id="w-amount" min="1" max="10" step="0.5" placeholder="ឧទាហរណ៍: 5" style="width: 100%; padding: 10px; margin: 5px 0 12px 0; border-radius: 8px; background: #1a1a22; color: white; border: 1px solid #444;">
+
+    <label style="font-size: 13px; color: #ccc;">លេខកុង/Email PayPal:</label>
+    <input type="text" id="w-account" placeholder="លេខកុង ឬ Email" style="width: 100%; padding: 10px; margin: 5px 0 12px 0; border-radius: 8px; background: #1a1a22; color: white; border: 1px solid #444;">
+
+    <label style="font-size: 13px; color: #ccc;">ឈ្មោះម្ចាស់គណនី:</label>
+    <input type="text" id="w-name" placeholder="ឈ្មោះគណនី" style="width: 100%; padding: 10px; margin: 5px 0 15px 0; border-radius: 8px; background: #1a1a22; color: white; border: 1px solid #444;">
+
+    <div style="display: flex; gap: 10px;">
+      <button onclick="closeWithdrawModal()" style="flex: 1; padding: 10px; border-radius: 8px; background: #555; color: white; border: none;">បោះបង់</button>
+      <button onclick="confirmWithdraw()" style="flex: 1; padding: 10px; border-radius: 8px; background: #28a745; color: white; border: none; font-weight: bold;">Yes (បញ្ជាក់)</button>
+    </div>
+  </div>
+</div>
 
   <!-- TAB 3: FRIENDS -->
   <div id="tab-friends" class="tab-content">
