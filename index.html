@@ -146,10 +146,25 @@
       btn.style.background = '#28a745';
       btn.disabled = true;
     }
+    function doTask(btn, reward) {
+      count += reward;
+      updateDisplay();
+      btn.innerText = 'Done';
+      btn.style.background = '#28a745';
+      btn.disabled = true;
+    }
 
     function shareInvite() {
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=https://t.me/TRXmine_X_bot/trxminer');
+      const botUsername = 'TRXmine_X_bot';
+      const appShortName = 'trxminer';
+      const shareText = 'Join TRX Mining Hub and start mining free TRX!';
+      
+      const shareUrl = `https://t.me/share/url?url=https://t.me/${botUsername}/${appShortName}&text=${encodeURIComponent(shareText)}`;
+
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
       }
     }
   </script>
