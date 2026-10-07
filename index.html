@@ -6,23 +6,28 @@
   <title>TRX Mining App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; }
     body { background-color: #0f0f12; color: #ffffff; display: flex; flex-direction: column; height: 100vh; justify-content: space-between; }
     .header { padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
     
-    /* Content Sections */
-    .tab-content { display: none; padding: 20px; text-align: center; flex: 1; }
+    .tab-content { display: none; padding: 20px; text-align: center; flex: 1; overflow-y: auto; }
     .tab-content.active { display: block; }
     
     /* Mining Circle */
-    .mine-circle { width: 160px; height: 160px; background: radial-gradient(circle, #8a2be2, #000); border-radius: 50%; margin: 30px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px #8a2be2; cursor: pointer; }
-    .mine-circle:active { transform: scale(0.95); }
-    .balance { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+    .mine-circle { width: 160px; height: 160px; background: radial-gradient(circle, #8a2be2, #000); border-radius: 50%; margin: 25px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px #8a2be2; cursor: pointer; transition: transform 0.1s; }
+    .mine-circle:active { transform: scale(0.92); }
+    .balance { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
     
     /* Buttons */
     .btn { background: #ffffff; color: #000; border: none; padding: 12px 24px; border-radius: 20px; font-weight: bold; font-size: 16px; margin: 5px; cursor: pointer; }
-    
-    /* Bottom Navigation */
+    .btn-action { background: #0088cc; color: #fff; padding: 8px 16px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
+
+    /* Task Box */
+    .task-card { background: #1a1a22; border: 1px solid #2a2a35; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; text-align: left; }
+    .task-info h4 { font-size: 15px; margin-bottom: 4px; }
+    .task-info p { font-size: 13px; color: #888; }
+
+    /* Bottom Nav */
     .bottom-nav { display: flex; justify-content: space-around; background: #1a1a22; padding: 12px 0; border-top: 1px solid #2a2a35; }
     .nav-item { background: none; border: none; color: #888; font-size: 22px; cursor: pointer; }
     .nav-item.active { color: #0088cc; }
@@ -32,47 +37,71 @@
 
   <div class="header">TRX Mining Hub</div>
 
-  <!-- TAB 1: HOME (MINING) -->
+  <!-- TAB 1: HOME -->
   <div id="tab-home" class="tab-content active">
-    <div class="balance"><span id="trx-count">0.000216</span> TRX</div>
+    <div class="balance"><span id="trx-count">0.000486</span> TRX</div>
     <div class="mine-circle" onclick="tapToEarn()">
-      <span style="font-size: 40px;">💎</span>
+      <span style="font-size: 50px;">💎</span>
     </div>
     <button class="btn" onclick="claimTRX()">Claim</button>
-    <button class="btn">Boost</button>
+    <button class="btn" onclick="goToBoost()">Boost</button>
   </div>
 
   <!-- TAB 2: WALLET -->
   <div id="tab-wallet" class="tab-content">
     <h2>💼 Wallet</h2>
-    <p style="margin-top:20px;">TRX Balance: <b id="wallet-trx">0.000216</b> TRX</p>
-    <button class="btn" style="margin-top:20px;">Withdraw</button>
+    <p style="margin:20px 0;">TRX Balance: <b id="wallet-trx">0.000486</b> TRX</p>
+    <button class="btn" onclick="alert('Withdraw feature coming soon!')">Withdraw</button>
   </div>
 
   <!-- TAB 3: FRIENDS -->
   <div id="tab-friends" class="tab-content">
     <h2>👥 Referral</h2>
-    <p style="margin-top:20px;">Invite friends and get 10% bonus!</p>
-    <button class="btn" style="margin-top:20px;" onclick="shareInvite()">Invite Friend</button>
+    <p style="margin:20px 0;">Invite friends to earn extra TRX!</p>
+    <button class="btn" onclick="shareInvite()">Invite Friend</button>
   </div>
 
-  <!-- TAB 4: TASKS/BOOST -->
+  <!-- TAB 4: BOOST & TASKS -->
   <div id="tab-tasks" class="tab-content">
-    <h2>🚀 Boost & Tasks</h2>
-    <p style="margin-top:20px;">Complete tasks to speed up mining.</p>
+    <h2 style="margin-bottom: 15px;">🚀 Boost & Tasks</h2>
+    
+    <div class="task-card">
+      <div class="task-info">
+        <h4>⚡ Speed Mining Boost</h4>
+        <p>+0.0001 TRX / Tap</p>
+      </div>
+      <button class="btn-action" onclick="buyBoost()">Upgrade</button>
+    </div>
+
+    <div class="task-card">
+      <div class="task-info">
+        <h4>📢 Join Telegram Channel</h4>
+        <p>Reward: +0.005 TRX</p>
+      </div>
+      <button class="btn-action" onclick="doTask(this, 0.005)">Start</button>
+    </div>
+
+    <div class="task-card">
+      <div class="task-info">
+        <h4>👥 Invite 3 Friends</h4>
+        <p>Reward: +0.01 TRX</p>
+      </div>
+      <button class="btn-action" onclick="doTask(this, 0.01)">Claim</button>
+    </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR -->
+  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('tab-home', this)">💎</button>
+    <button id="btn-tab-home" class="nav-item active" onclick="switchTab('tab-home', this)">💎</button>
     <button class="nav-item" onclick="switchTab('tab-wallet', this)">👛</button>
     <button class="nav-item" onclick="switchTab('tab-friends', this)">👥</button>
-    <button class="nav-item" onclick="switchTab('tab-tasks', this)">🚀</button>
+    <button id="btn-tab-tasks" class="nav-item" onclick="switchTab('tab-tasks', this)">🚀</button>
   </div>
 
   <script>
-    let count = 0.000216;
-    
+    let count = 0.000486;
+    let tapPower = 0.00001;
+
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -81,14 +110,41 @@
       btn.classList.add('active');
     }
 
+    function goToBoost() {
+      switchTab('tab-tasks', document.getElementById('btn-tab-tasks'));
+    }
+
     function tapToEarn() {
-      count += 0.00001;
+      count += tapPower;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
       document.getElementById('trx-count').innerText = count.toFixed(6);
       document.getElementById('wallet-trx').innerText = count.toFixed(6);
     }
 
     function claimTRX() {
       alert('Claimed successfully!');
+    }
+
+    function buyBoost() {
+      if(count >= 0.001) {
+        count -= 0.001;
+        tapPower += 0.00002;
+        updateDisplay();
+        alert('Boost Upgraded! You earn more per tap.');
+      } else {
+        alert('Not enough TRX to buy Boost! Need 0.001 TRX.');
+      }
+    }
+
+    function doTask(btn, reward) {
+      count += reward;
+      updateDisplay();
+      btn.innerText = 'Done';
+      btn.style.background = '#28a745';
+      btn.disabled = true;
     }
 
     function shareInvite() {
